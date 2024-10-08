@@ -12,7 +12,7 @@ TIMEOUT = 30
 
 # Cria o socket UDP
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-client.settimeout(30)
+client.settimeout(10)
 
 # Mensagem para o servidor
 print("1 para arquivo grande, 0 para arquivo pequeno ou -1 para um arquivo inexistente: ")
@@ -20,9 +20,13 @@ x = input()
 if int(x)==0:
     file = "/teste.txt"
 elif int(x)==1:
-    file = "/acidentes2017.csv"
+    file = "/teste2.txt"
 else:
     file = "/inexistente.txt"
+
+print("1 para perda de dados ou 0 para ida correta dos dados: ")
+x=input()
+flag=1
 
 message = ("REQU "+file).encode('utf-8')
 client.sendto(message, (IP, PORT))
@@ -50,7 +54,9 @@ while True:
             else:
                 print(f"Checksum incorreto no bloco {block_number}. Solicitando retransmissão...")
                 client.sendto(f"SEND {block_number}".encode('utf-8'), (IP, PORT))
-            
+            if int(x)==1 and flag==1 and block_number==1:
+                flag=0
+                received_data.pop(block_number)
             # Se todos os blocos forem recebidos
             if len(received_data) == total_blocks:
                 with open("arquivo_reconstruido.txt", "wb") as f:
@@ -59,4 +65,15 @@ while True:
                 print("Arquivo reconstruído com sucesso!")
                 break
     except socket.timeout:
-        pass
+        print("Tempo limite excedido ao esperar um pacote.")
+
+        # Verifica blocos faltantes
+        missing_blocks = [i for i in range(1, total_blocks + 1) if i not in received_data]
+
+        if not missing_blocks:
+            print("Todos os blocos foram recebidos.")
+            break
+
+        for block_number in missing_blocks:
+            print(f"Solicitando bloco {block_number} novamente...")
+            client.sendto((f"SEND {block_number} "+file).encode('utf-8'), (IP, PORT))
