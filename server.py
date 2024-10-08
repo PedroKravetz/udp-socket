@@ -49,3 +49,5 @@ while True:
             # Se o arquivo não for encontrado
             error_msg = "ERRO Arquivo não encontrado".encode('utf-8')
             server_socket.sendto(error_msg, address)
+    elif request.startswith("REQU"):
+        pass
