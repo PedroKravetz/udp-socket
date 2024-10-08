@@ -7,7 +7,7 @@ def verify_checksum(data, checksum):
 # Configurações do cliente
 IP = "127.0.0.1"
 PORT = 12345
-BUFFER_SIZE = 1500
+BUFFER_SIZE = 1100
 TIMEOUT = 30
 
 # Cria o socket UDP
