@@ -33,6 +33,8 @@ client.sendto(message, (IP, PORT))
 
 received_data = {}
 
+total_blocks=None
+
 # Recebe a resposta do servidor
 while True:
     try:
@@ -67,6 +69,9 @@ while True:
     except socket.timeout:
         print("Tempo limite excedido ao esperar um pacote.")
 
+        if not total_blocks:
+            client.sendto(message, (IP, PORT))
+            continue
         # Verifica blocos faltantes
         missing_blocks = [i for i in range(1, total_blocks + 1) if i not in received_data]
 
@@ -77,3 +82,6 @@ while True:
         for block_number in missing_blocks:
             print(f"Solicitando bloco {block_number} novamente...")
             client.sendto((f"SEND {block_number} "+file).encode('utf-8'), (IP, PORT))
+    except ConnectionResetError:
+        client.sendto(message, (IP, PORT))
+        continue
