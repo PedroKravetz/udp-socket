@@ -15,11 +15,13 @@ client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 client.settimeout(10)
 
 # Mensagem para o servidor
-print("1 para arquivo grande, 0 para arquivo pequeno ou -1 para um arquivo inexistente: ")
+print("2 para arquivo grande, 1 para arquivo médio, 0 para arquivo pequeno ou -1 para um arquivo inexistente: ")
 x = input()
 if int(x)==0:
     file = "/teste.txt"
 elif int(x)==1:
+    file = "/teste3.txt"
+elif int(x)==2:
     file = "/teste2.txt"
 else:
     file = "/inexistente.txt"
